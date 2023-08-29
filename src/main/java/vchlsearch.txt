@@ -1,0 +1,52 @@
+package com.ats.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+
+import com.ats.bndingdomain.VehicleSummary;
+
+@Service
+public class VehicleSearchServiceImpl implements VehicleSearchService {
+
+
+	
+	@Autowired
+	private RestTemplate rt;
+	
+	private static final String RTO_REST_URL="http://localhost:8080/rto/getVehicleSummary?regNo={regNo}";
+	@Override
+	public VehicleSummary invokeVehicleDetails(String regNo) {
+		
+		      Integer StatusCode=null;
+		      ResponseEntity<VehicleSummary> responseEntity =null;
+		      VehicleSummary vchlSummary=null;
+		
+		      
+		      try
+		      {
+		    	  responseEntity=  rt.exchange(RTO_REST_URL, HttpMethod.GET, null, VehicleSummary.class,regNo);
+				     StatusCode=   responseEntity.getStatusCode().value();
+		      }
+		    catch(HttpClientErrorException ex)
+		      {
+		    	 StatusCode=   ex.getStatusCode().value();
+		      }
+		      catch(Exception ex)
+		      {
+		    	  ex.getMessage();
+		      }
+		    if(StatusCode==400)
+		    {
+		    	return null;
+		    }
+		    else
+		    {
+		      return vchlSummary;
+		    }
+	}
+
+}
